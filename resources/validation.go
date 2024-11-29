@@ -17,8 +17,37 @@ func GetErrorMsg(fe validator.FieldError) string {
 	switch fe.Tag() {
 	case "required":
 		return "This field is required"
+	case "email":
+		return "Invalid email format"
+	case "min":
+		return "The value must be at least " + fe.Param() + " characters"
+	case "max":
+		return "The value must not exceed " + fe.Param() + " characters"
+	case "len":
+		return "The value must be exactly " + fe.Param() + " characters"
+	case "numeric":
+		return "The value must be a number"
+	case "alpha":
+		return "The value must contain only alphabetic characters"
+	case "alphanum":
+		return "The value must contain only alphanumeric characters"
+	case "url":
+		return "Invalid URL format"
+	case "uuid":
+		return "Invalid UUID format"
+	case "eqfield":
+		return "This field must be equal to " + fe.Param()
+	case "nefield":
+		return "This field must not be equal to " + fe.Param()
+	case "gte":
+		return "The value must be greater than or equal to " + fe.Param()
+	case "lte":
+		return "The value must be less than or equal to " + fe.Param()
+	case "oneof":
+		return "The value must be one of the following: " + fe.Param()
+	default:
+		return "Invalid value"
 	}
-	return "Unknown error"
 }
 
 // Fungsi untuk memproses semua error validasi
