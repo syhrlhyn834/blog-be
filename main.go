@@ -17,7 +17,7 @@ func main() {
 		c.String(http.StatusOK, "Selamat datang di Blog Paytrizz API")
 	})
 
-	router.GET("/users", controllers.Findusers)
+	router.GET("/api/users", controllers.Findusers)
 
 	router.Run(":3000")
 
