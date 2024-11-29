@@ -17,8 +17,6 @@ func GetErrorMsg(fe validator.FieldError) string {
 	switch fe.Tag() {
 	case "required":
 		return "This field is required"
-	case "email":
-		return "Invalid email format"
 	}
 	return "Unknown error"
 }
