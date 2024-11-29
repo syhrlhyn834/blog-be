@@ -27,6 +27,8 @@ func main() {
 
 	router.DELETE("/api/users/:id", controllers.DeleteUser)
 
+	router.GET("/api/categories", controllers.FindCategories)
+
 	router.Run(":3000")
 
 }
