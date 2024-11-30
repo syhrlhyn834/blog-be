@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"be-golang/connection"
+	"be-golang/middleware"
 	"be-golang/models"
 	"be-golang/resources"
 	"net/http"
@@ -27,6 +28,7 @@ func Findusers(c *gin.Context) {
 }
 
 func StoreUser(c *gin.Context) {
+	middleware.AuthRequired()(c)
 	var input ValidateUserInput
 	if err := c.ShouldBindJSON(&input); err != nil {
 		errors := resources.ProcessValidationErrors(err)
@@ -65,6 +67,7 @@ func FindUserById(c *gin.Context) {
 }
 
 func UpdateUser(c *gin.Context) {
+	middleware.AuthRequired()(c)
 	var user models.User
 	if err := connection.DB.Where("id = ?", c.Param("id")).First(&user).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
@@ -93,6 +96,7 @@ func UpdateUser(c *gin.Context) {
 }
 
 func DeleteUser(c *gin.Context) {
+	middleware.AuthRequired()(c)
 	var user models.User
 	if err := connection.DB.Where("id = ?", c.Param("id")).First(&user).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})

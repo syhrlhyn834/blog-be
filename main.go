@@ -20,38 +20,27 @@ func main() {
 		c.String(http.StatusOK, "Selamat datang di Blog Paytrizz API")
 	})
 
-	// Rute untuk user
-	router.GET("/api/users", controllers.Findusers)
-	router.POST("/api/users", controllers.StoreUser)
-	router.GET("/api/users/:id", controllers.FindUserById)
-	router.PUT("/api/users/:id", controllers.UpdateUser)
-	router.DELETE("/api/users/:id", controllers.DeleteUser)
+	// Rute yang memerlukan token autentikasi (untuk pengguna dan kategori)
+	authRoutes := router.Group("/api")
+	authRoutes.Use(middleware.AuthRequired()) // Menambahkan middleware untuk semua rute dalam grup ini
+	{
+		// Rute yang memerlukan token autentikasi untuk pengguna
+		authRoutes.GET("/users", controllers.Findusers)
+		authRoutes.GET("/users/:id", controllers.FindUserById)
+		authRoutes.POST("/users", controllers.StoreUser)
+		authRoutes.PUT("/users/:id", controllers.UpdateUser)
+		authRoutes.DELETE("/users/:id", controllers.DeleteUser)
+		authRoutes.GET("/user", controllers.GetUser)
+		authRoutes.POST("/refresh", controllers.RefreshToken)
+		authRoutes.POST("/logout", controllers.Logout)
+		authRoutes.POST("/categories", controllers.StoreCategory)
+		authRoutes.PUT("/categories/:id", controllers.UpdateCategory)
+		authRoutes.DELETE("/categories/:id", controllers.DeleteCategory)
+	}
 
-	// Rute untuk kategori
+	router.POST("/api/login", controllers.Login)
 	router.GET("/api/categories", controllers.FindCategories)
 	router.GET("/api/categories/:id", controllers.FindCategoryById)
-
-	// Rute yang dilindungi dengan middleware AuthRequired
-	protected := router.Group("/api/categories")
-	protected.Use(middleware.AuthRequired())
-	{
-		protected.POST("/", controllers.StoreCategory)
-		protected.PUT("/:id", controllers.UpdateCategory)
-		protected.DELETE("/:id", controllers.DeleteCategory)
-	}
-
-	// Menambahkan middleware pada rute yang membutuhkan autentikasi
-	authRoutes := router.Group("/api")
-	authRoutes.Use(middleware.AuthRequired())
-	{
-		// Rute yang memerlukan token autentikasi
-		authRoutes.GET("/user", controllers.GetUser)          // Rute untuk mendapatkan user yang sedang login
-		authRoutes.POST("/refresh", controllers.RefreshToken) // Rute untuk refresh token
-		authRoutes.POST("/logout", controllers.Logout)        // Rute untuk logout
-	}
-
-	// Rute untuk login
-	router.POST("/api/login", controllers.Login)
 
 	// Jalankan server di port 3000
 	router.Run(":3000")

@@ -35,7 +35,7 @@ func AuthRequired() gin.HandlerFunc {
 		// Memeriksa apakah token ada di blacklist
 		var blacklistedToken models.TokenBlacklist
 		if err := connection.DB.Where("token = ?", tokenString).First(&blacklistedToken).Error; err == nil {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Token is blacklisted"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Token is required"})
 			c.Abort()
 			return
 		}
