@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"be-golang/connection"
+	"be-golang/middleware"
 	"be-golang/models"
 	"be-golang/resources"
 	"net/http"
@@ -26,6 +27,7 @@ func FindCategories(c *gin.Context) {
 }
 
 func StoreCategory(c *gin.Context) {
+	middleware.AuthRequired()(c)
 	var input ValidateCategoryInput
 	if err := c.ShouldBindBodyWithJSON(&input); err != nil {
 		errors := resources.ProcessValidationErrors(err)
@@ -65,6 +67,7 @@ func FindCategoryById(c *gin.Context) {
 }
 
 func UpdateCategory(c *gin.Context) {
+	middleware.AuthRequired()(c)
 	var categories models.Category
 	if err := connection.DB.Where("id = ?", c.Param("id")).First(&categories).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
@@ -93,6 +96,7 @@ func UpdateCategory(c *gin.Context) {
 }
 
 func DeleteCategory(c *gin.Context) {
+	middleware.AuthRequired()(c)
 	var categories models.Category
 	if err := connection.DB.Where("id = ?", c.Param("id")).First(&categories).Error; err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})

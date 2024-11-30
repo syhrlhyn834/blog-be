@@ -25,6 +25,7 @@ func ConnectDatabase() {
 		&models.Menu{},
 		&models.Sosmed{},
 		&models.Dataweb{},
+		&models.TokenBlacklist{},
 	)
 
 	// Menyimpan instance koneksi database ke variabel global
