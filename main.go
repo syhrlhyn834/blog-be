@@ -29,6 +29,14 @@ func main() {
 
 	router.GET("/api/categories", controllers.FindCategories)
 
+	router.POST("/api/categories", controllers.StoreCategory)
+
+	router.GET("/api/categories/:id", controllers.FindCategoryById)
+
+	router.PUT("/api/categories/:id", controllers.UpdateCategory)
+
+	router.DELETE("/api/categories/:id", controllers.DeleteCategory)
+
 	router.Run(":3000")
 
 }
