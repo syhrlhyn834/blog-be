@@ -15,4 +15,6 @@ type Post struct {
 	Views       uint64    `json:"views" gorm:"default:0"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
+	Category    Category  `json:"category" gorm:"foreignKey:CategoryID"`
+	User        User      `json:"user" gorm:"foreignKey:UserID"`
 }

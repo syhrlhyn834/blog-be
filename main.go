@@ -36,11 +36,13 @@ func main() {
 		authRoutes.POST("/categories", controllers.StoreCategory)
 		authRoutes.PUT("/categories/:id", controllers.UpdateCategory)
 		authRoutes.DELETE("/categories/:id", controllers.DeleteCategory)
+		authRoutes.POST("/post", controllers.StorePost)
 	}
 
 	router.POST("/api/login", controllers.Login)
 	router.GET("/api/categories", controllers.FindCategories)
 	router.GET("/api/categories/:id", controllers.FindCategoryById)
+	router.GET("/api/post", controllers.FindPost)
 
 	// Jalankan server di port 3000
 	router.Run(":3000")
