@@ -37,12 +37,17 @@ func main() {
 		authRoutes.PUT("/categories/:id", controllers.UpdateCategory)
 		authRoutes.DELETE("/categories/:id", controllers.DeleteCategory)
 		authRoutes.POST("/post", controllers.StorePost)
+		authRoutes.POST("/menus", controllers.StoreMenu)
+		authRoutes.PUT("/menus/:id", controllers.UpdateMenu)
+		authRoutes.DELETE("/menus/:id", controllers.DeleteMenu)
 	}
 
 	router.POST("/api/login", controllers.Login)
 	router.GET("/api/categories", controllers.FindCategories)
 	router.GET("/api/categories/:id", controllers.FindCategoryById)
 	router.GET("/api/post", controllers.FindPost)
+	router.GET(("/api/menus"), controllers.FindMenu)
+	router.GET("/api/menus/:id", controllers.FindMenuById)
 
 	// Jalankan server di port 3000
 	router.Run(":3000")
