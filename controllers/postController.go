@@ -5,7 +5,9 @@ import (
 	"be-golang/middleware"
 	"be-golang/models"
 	"be-golang/resources"
+	"fmt"
 	"net/http"
+	"os"
 	"path/filepath"
 
 	"github.com/gin-gonic/gin"
@@ -19,7 +21,7 @@ type ValidatePostInput struct {
 	UserID      int    `json:"user_id" binding:"required"`
 	Description string `json:"description" binding:"required"`
 	Content     string `json:"content" binding:"required"`
-	Image       string `json:"image" binding:"omitempty,url"`
+	Image       string `json:"image" binding:"required"`
 	Status      string `json:"status" binding:"required,oneof=draft published archive"`
 }
 
@@ -61,23 +63,38 @@ func StorePost(c *gin.Context) {
 		return
 	}
 
-	// Proses upload file gambar
-	file, err := c.FormFile("image")
-	var imagePath string
-	if err == nil {
-		// Jika file gambar ditemukan, simpan file ke folder `image`
-		uploadPath := "./src/image"
-		imagePath = filepath.Join(uploadPath, file.Filename)
-
-		// Simpan file ke folder
-		if err := c.SaveUploadedFile(file, imagePath); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menyimpan file"})
-			return
-		}
+	// Menangani Upload Gambar
+	// Mendapatkan file gambar dari form-data
+	file, err := c.FormFile("image") // "image" adalah nama form input di frontend
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Image is required"})
+		return
 	}
 
+	// Tentukan folder tujuan untuk menyimpan gambar
+	imageFolder := "src/images"
+	// Pastikan folder tujuan ada
+	err = os.MkdirAll(imageFolder, os.ModePerm)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create image folder"})
+		return
+	}
+
+	// Tentukan path penyimpanan gambar
+	fileExtension := filepath.Ext(file.Filename)
+	imagePath := fmt.Sprintf("%s/%s%s", imageFolder, slug.Make(input.Title), fileExtension)
+
+	// Simpan gambar ke server
+	err = c.SaveUploadedFile(file, imagePath)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save image"})
+		return
+	}
+
+	// Membuat slug untuk post
 	generatedSlug := slug.Make(input.Title)
-	// Simpan data post ke database
+
+	// Simpan data post ke database, termasuk path gambar
 	post := models.Post{
 		Title:       input.Title,
 		Slug:        generatedSlug,
@@ -85,7 +102,7 @@ func StorePost(c *gin.Context) {
 		UserID:      input.UserID,
 		Description: input.Description,
 		Content:     input.Content,
-		Image:       imagePath, // Path file yang disimpan
+		Image:       imagePath, // Menyimpan path gambar relatif
 		Status:      input.Status,
 	}
 

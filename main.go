@@ -15,6 +15,9 @@ func main() {
 	// Koneksi ke database
 	connection.ConnectDatabase()
 
+	// Menyajikan file statis (gambar) dari folder src/images
+	router.Static("/src/images", "./src/images")
+
 	// Rute untuk halaman utama
 	router.GET("/", func(c *gin.Context) {
 		c.String(http.StatusOK, "Selamat datang di Blog Paytrizz API")
