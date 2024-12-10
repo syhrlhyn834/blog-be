@@ -5,10 +5,13 @@ import (
 	"be-golang/middleware"
 	"be-golang/models"
 	"be-golang/resources"
+	"fmt"
 	"net/http"
+	"os"
 	"path/filepath"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gosimple/slug"
 )
 
 type ValidateDataWebInput struct {
@@ -41,18 +44,32 @@ func StoreDataWeb(c *gin.Context) {
 		}
 	}
 
-	file, err := c.FormFile("image")
-	var imagePath string
-	if err == nil {
-		uploadPath := "./src/image"
-		imagePath = filepath.Join(uploadPath, file.Filename)
+	// Menangani Upload Gambar
+	// Mendapatkan file gambar dari form-data
+	file, err := c.FormFile("image") // "image" adalah nama form input di frontend
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Image is required"})
+		return
+	}
 
-		if err := c.SaveUploadedFile(file, imagePath); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"error": "Gagal menyimpan file favico",
-			})
-			return
-		}
+	// Tentukan folder tujuan untuk menyimpan gambar
+	imageFolder := "src/images"
+	// Pastikan folder tujuan ada
+	err = os.MkdirAll(imageFolder, os.ModePerm)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create image folder"})
+		return
+	}
+
+	// Tentukan path penyimpanan gambar
+	fileExtension := filepath.Ext(file.Filename)
+	imagePath := fmt.Sprintf("%s/%s%s", imageFolder, slug.Make(input.Title), fileExtension)
+
+	// Simpan gambar ke server
+	err = c.SaveUploadedFile(file, imagePath)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save image"})
+		return
 	}
 
 	dataWebs := models.Dataweb{
