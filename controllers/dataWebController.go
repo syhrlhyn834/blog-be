@@ -41,29 +41,15 @@ func StoreDataWeb(c *gin.Context) {
 		}
 	}
 
-	fileFavico, err := c.FormFile("favico")
-	var favicoPath string
+	file, err := c.FormFile("image")
+	var imagePath string
 	if err == nil {
-		uploadPath := "./src/favico"
-		favicoPath = filepath.Join(uploadPath, fileFavico.Filename)
+		uploadPath := "./src/image"
+		imagePath = filepath.Join(uploadPath, file.Filename)
 
-		if err := c.SaveUploadedFile(fileFavico, favicoPath); err != nil {
+		if err := c.SaveUploadedFile(file, imagePath); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"error": "Gagal menyimpan file favico",
-			})
-			return
-		}
-	}
-
-	fileLogo, err := c.FormFile("logo")
-	var logoPath string
-	if err == nil {
-		uploadPath := "./src/logo"
-		logoPath = filepath.Join(uploadPath, fileLogo.Filename)
-
-		if err := c.SaveUploadedFile(fileLogo, logoPath); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{
-				"error": "Gagal menyimpan file logo",
 			})
 			return
 		}
@@ -72,8 +58,8 @@ func StoreDataWeb(c *gin.Context) {
 	dataWebs := models.Dataweb{
 		Title:       input.Title,
 		Description: input.Description,
-		Favico:      favicoPath,
-		Logo:        logoPath,
+		Favico:      imagePath,
+		Logo:        imagePath,
 		Footer:      input.Footer,
 	}
 	connection.DB.Create(&dataWebs)
