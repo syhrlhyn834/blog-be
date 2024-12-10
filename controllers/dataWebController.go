@@ -6,6 +6,7 @@ import (
 	"be-golang/models"
 	"be-golang/resources"
 	"net/http"
+	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 )
@@ -40,11 +41,39 @@ func StoreDataWeb(c *gin.Context) {
 		}
 	}
 
+	fileFavico, err := c.FormFile("favico")
+	var favicoPath string
+	if err == nil {
+		uploadPath := "./src/favico"
+		favicoPath = filepath.Join(uploadPath, fileFavico.Filename)
+
+		if err := c.SaveUploadedFile(fileFavico, favicoPath); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": "Gagal menyimpan file favico",
+			})
+			return
+		}
+	}
+
+	fileLogo, err := c.FormFile("logo")
+	var logoPath string
+	if err == nil {
+		uploadPath := "./src/logo"
+		logoPath = filepath.Join(uploadPath, fileLogo.Filename)
+
+		if err := c.SaveUploadedFile(fileLogo, logoPath); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": "Gagal menyimpan file logo",
+			})
+			return
+		}
+	}
+
 	dataWebs := models.Dataweb{
 		Title:       input.Title,
 		Description: input.Description,
-		Favico:      input.Favico,
-		Logo:        input.Logo,
+		Favico:      favicoPath,
+		Logo:        logoPath,
 		Footer:      input.Footer,
 	}
 	connection.DB.Create(&dataWebs)
