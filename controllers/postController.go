@@ -102,7 +102,7 @@ func StorePost(c *gin.Context) {
 		UserID:      input.UserID,
 		Description: input.Description,
 		Content:     input.Content,
-		Image:       imagePath, // Menyimpan path gambar relatif
+		Image:       imagePath,
 		Status:      input.Status,
 	}
 

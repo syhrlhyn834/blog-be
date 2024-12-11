@@ -3,6 +3,7 @@ package middleware
 import (
 	"errors"
 	"net/http"
+	"os"
 	"strings"
 
 	"be-golang/connection"
@@ -12,7 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var secretKey = []byte("KontolKuda123") // Gantilah dengan secret key yang lebih aman
+var secretKey = []byte(os.Getenv("SECRET_KEY"))
 
 // JWT middleware untuk memverifikasi token
 func AuthRequired() gin.HandlerFunc {

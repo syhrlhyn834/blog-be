@@ -4,11 +4,19 @@ import (
 	"be-golang/connection"
 	"be-golang/controllers"
 	"be-golang/middleware" // Impor middleware AuthRequired
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
+func init() {
+	// Load .env file
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found")
+	}
+}
 func main() {
 	router := gin.Default()
 

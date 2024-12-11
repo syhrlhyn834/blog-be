@@ -6,6 +6,7 @@ import (
 	"be-golang/resources"
 	"errors"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -14,7 +15,7 @@ import (
 )
 
 // Secret key untuk menandatangani JWT
-var secretKey = []byte("KontolKuda123") // Gantilah dengan secret key yang lebih aman
+var secretKey = []byte(os.Getenv("SECRET_KEY"))
 
 // Struct untuk validasi login
 type LoginInput struct {
