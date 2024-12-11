@@ -4,6 +4,7 @@ import "time"
 
 type Sosmed struct {
 	Id        int        `json:"id" gorm:"primary_key"`
+	Name      string     `json:"name"`
 	Logo      string     `json:"logo"`
 	Url       string     `json:"url"`
 	Username  string     `json:"username" gorm:"type:text"`

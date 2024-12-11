@@ -11,6 +11,7 @@ import (
 )
 
 type ValidateSosmedInput struct {
+	Name     string `json:"name" binding:"required"`
 	Logo     string `json:"logo" binding:"required"`
 	Url      string `json:"url" binding:"required"`
 	Username string `json:"username" binding:"required"`
@@ -36,6 +37,7 @@ func StoreSosmed(c *gin.Context) {
 		}
 	}
 	sosmed := models.Sosmed{
+		Name:     input.Name,
 		Logo:     input.Logo,
 		Url:      input.Url,
 		Username: input.Username,
@@ -77,6 +79,7 @@ func UpdateSosmed(c *gin.Context) {
 		}
 	}
 	connection.DB.Model(&sosmed).Updates(models.Sosmed{
+		Name:     input.Name,
 		Logo:     input.Logo,
 		Url:      input.Url,
 		Username: input.Username,
