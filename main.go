@@ -46,6 +46,9 @@ func main() {
 		authRoutes.POST("/dataweb", controllers.StoreDataWeb)
 		authRoutes.PUT("/dataweb/:id", controllers.UpdateDataWeb)
 		authRoutes.DELETE("/dataweb/:id", controllers.DeleteDataWeb)
+		authRoutes.POST("/sosmed", controllers.StoreSosmed)
+		authRoutes.PUT("/sosmed/:id", controllers.UpdateSosmed)
+		authRoutes.DELETE("/sosmed/:id", controllers.DeleteSosmed)
 	}
 
 	router.POST("/api/login", controllers.Login)
@@ -56,6 +59,8 @@ func main() {
 	router.GET("/api/menus/:id", controllers.FindMenuById)
 	router.GET("/api/dataweb", controllers.FindDataWeb)
 	router.GET("/api/dataweb/:id", controllers.FindDataWebById)
+	router.GET("/api/sosmed", controllers.FindSosmed)
+	router.GET("/api/sosmed/:id", controllers.FindSosmedById)
 
 	// Jalankan server di port 3000
 	router.Run(":3000")
