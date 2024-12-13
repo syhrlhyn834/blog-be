@@ -2,9 +2,8 @@ package models
 
 import (
 	"fmt"
+	"net/http"
 	"time"
-
-	"github.com/gin-gonic/gin"
 )
 
 type Post struct {
@@ -24,6 +23,15 @@ type Post struct {
 	User        User      `json:"user" gorm:"foreignKey:UserID"`
 }
 
-func (post *Post) GetImageURL(c *gin.Context) string {
-	return fmt.Sprintf("http://%s/%s", c.Request.Host, post.Image)
+// Fungsi Getter untuk properti ImageURL
+func (post *Post) GetImageURL(r *http.Request) string {
+	return fmt.Sprintf("%s://%s/%s", getScheme(r), r.Host, post.Image)
+}
+
+// Fungsi bantu untuk menentukan skema (http atau https)
+func getScheme(r *http.Request) string {
+	if r.Header.Get("X-Forwarded-Proto") != "" {
+		return r.Header.Get("X-Forwarded-Proto")
+	}
+	return "http"
 }
