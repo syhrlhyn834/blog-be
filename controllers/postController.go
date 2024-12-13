@@ -15,14 +15,14 @@ import (
 )
 
 type ValidatePostInput struct {
-	Title       string `json:"title" binding:"required,max=255"`
-	Slug        string `json:"slug" binding:"required,max=255"`
-	CategoryID  int    `json:"category_id" binding:"required"`
-	UserID      int    `json:"user_id" binding:"required"`
-	Description string `json:"description" binding:"required"`
-	Content     string `json:"content" binding:"required"`
-	Image       string `json:"image" binding:"required"`
-	Status      string `json:"status" binding:"required,oneof=draft published archive"`
+	Title       string `form:"title" binding:"required,max=255"`
+	Slug        string `form:"slug" binding:"required,max=255"`
+	CategoryID  int    `form:"category_id" binding:"required"`
+	UserID      int    `form:"user_id" binding:"required"`
+	Description string `form:"description" binding:"required"`
+	Content     string `form:"content" binding:"required"`
+	Image       string `form:"image" binding:"required"`
+	Status      string `form:"status" binding:"required,oneof=draft published archive"`
 }
 
 func FindPost(c *gin.Context) {
@@ -46,7 +46,7 @@ func StorePost(c *gin.Context) {
 
 	// Validasi input JSON untuk data selain gambar
 	var input ValidatePostInput
-	if err := c.ShouldBindJSON(&input); err != nil {
+	if err := c.ShouldBind(&input); err != nil {
 		errors := resources.ProcessValidationErrors(err)
 		if errors != nil {
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"errors": errors})
@@ -64,8 +64,7 @@ func StorePost(c *gin.Context) {
 	}
 
 	// Menangani Upload Gambar
-	// Mendapatkan file gambar dari form-data
-	file, err := c.FormFile("image") // "image" adalah nama form input di frontend
+	file, err := c.FormFile("image")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Image is required"})
 		return
@@ -73,7 +72,6 @@ func StorePost(c *gin.Context) {
 
 	// Tentukan folder tujuan untuk menyimpan gambar
 	imageFolder := "src/images"
-	// Pastikan folder tujuan ada
 	err = os.MkdirAll(imageFolder, os.ModePerm)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create image folder"})
@@ -106,10 +104,14 @@ func StorePost(c *gin.Context) {
 		Status:      input.Status,
 	}
 
+	// Simpan post dan dapatkan ID-nya
 	if err := connection.DB.Create(&post).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menyimpan data"})
 		return
 	}
+
+	// Preload relasi Category dan User setelah post berhasil disimpan
+	connection.DB.Preload("Category").Preload("User").First(&post)
 
 	c.JSON(http.StatusOK, gin.H{
 		"success": true,

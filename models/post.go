@@ -1,6 +1,11 @@
 package models
 
-import "time"
+import (
+	"fmt"
+	"time"
+
+	"github.com/gin-gonic/gin"
+)
 
 type Post struct {
 	Id          int       `json:"id" gorm:"primary_key"`
@@ -17,4 +22,8 @@ type Post struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 	Category    Category  `json:"category" gorm:"foreignKey:CategoryID"`
 	User        User      `json:"user" gorm:"foreignKey:UserID"`
+}
+
+func (post *Post) GetImageURL(c *gin.Context) string {
+	return fmt.Sprintf("http://%s/%s", c.Request.Host, post.Image)
 }
